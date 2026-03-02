@@ -118,9 +118,7 @@
   "dependencies": {
     "@babel/parser": "^7.23.0",
     "@babel/traverse": "^7.23.0",
-    "@babel/types": "^7.23.0",
-    "tree-sitter": "^0.20.4",
-    "tree-sitter-python": "^0.20.4"
+    "@babel/types": "^7.23.0"
   },
   "repository": {
     "type": "git",
