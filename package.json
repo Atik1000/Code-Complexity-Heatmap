@@ -1,0 +1,130 @@
+{
+  "name": "code-complexity-heatmap",
+  "displayName": "Code Complexity Heatmap",
+  "description": "Visualize code complexity with color-coded heatmaps to identify refactoring opportunities and technical debt",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Visualization"
+  ],
+  "keywords": [
+    "complexity",
+    "heatmap",
+    "refactoring",
+    "technical debt",
+    "code quality"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onView:codeHeatmapView"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codeHeatmap.scanFile",
+        "title": "Code Heatmap: Scan Current File"
+      },
+      {
+        "command": "codeHeatmap.scanWorkspace",
+        "title": "Code Heatmap: Scan Entire Workspace"
+      },
+      {
+        "command": "codeHeatmap.showReport",
+        "title": "Code Heatmap: Show Complexity Report"
+      },
+      {
+        "command": "codeHeatmap.clearHighlights",
+        "title": "Code Heatmap: Clear Highlights"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "code-heatmap",
+          "title": "Code Heatmap",
+          "icon": "resources/heatmap-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "code-heatmap": [
+        {
+          "id": "codeHeatmapView",
+          "name": "Complexity Overview"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Code Complexity Heatmap",
+      "properties": {
+        "codeHeatmap.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable the complexity heatmap"
+        },
+        "codeHeatmap.scanOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan files on save"
+        },
+        "codeHeatmap.scanOnOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan files on open"
+        },
+        "codeHeatmap.thresholds.low": {
+          "type": "number",
+          "default": 10,
+          "description": "Maximum score for low complexity"
+        },
+        "codeHeatmap.thresholds.medium": {
+          "type": "number",
+          "default": 20,
+          "description": "Maximum score for medium complexity"
+        },
+        "codeHeatmap.thresholds.high": {
+          "type": "number",
+          "default": 35,
+          "description": "Maximum score for high complexity"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.19.0"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.0",
+    "@babel/types": "^7.23.0",
+    "tree-sitter": "^0.20.4",
+    "tree-sitter-python": "^0.20.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/code-complexity-heatmap"
+  },
+  "license": "MIT"
+}
