@@ -153,7 +153,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<ComplexityTreeIt
   /**
    * Get children for tree view
    */
-  getChildren(element?: ComplexityTreeItem): Thenable<ComplexityTreeItem[]> {
+  getChildren(element?: ComplexityTreeItem): Promise<ComplexityTreeItem[]> {
     if (!element) {
       // Root level - show summary and files
       return Promise.resolve(this.getRootItems());
