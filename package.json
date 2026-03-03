@@ -22,7 +22,11 @@
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
-    "onLanguage:python"
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:python",
+    "onLanguage:php",
+    "onLanguage:go"
   ],
   "main": "./dist/extension.js",
   "contributes": {

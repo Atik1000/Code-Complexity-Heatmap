@@ -68,22 +68,26 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
     const levelColor = this.getComplexityColor(level);
 
     md.appendMarkdown(`### ${emoji} Function: \`${name}\`\n\n`);
-    md.appendMarkdown(`**Complexity Score:** ${score} _(${level})_\n\n`);
+    md.appendMarkdown(`**Complexity Score:** \`${score}\` _(${level})_\n\n`);
     md.appendMarkdown('---\n\n');
-    md.appendMarkdown('**Metrics:**\n\n');
-    md.appendMarkdown(`- Cyclomatic Complexity: ${metrics.cyclomaticComplexity}\n`);
-    md.appendMarkdown(`- Nested Depth: ${metrics.nestedDepth}\n`);
-    md.appendMarkdown(`- Lines of Code: ${metrics.functionLength}\n`);
-    md.appendMarkdown(`- Conditions: ${metrics.conditionCount}\n`);
-    md.appendMarkdown(`- Loops: ${metrics.loopCount}\n`);
-    md.appendMarkdown(`- Parameters: ${metrics.parameterCount}\n`);
-    md.appendMarkdown(`- Return Statements: ${metrics.returnCount}\n`);
+    md.appendMarkdown('**📊 Metrics:**\n\n');
+    md.appendMarkdown(`- **Cyclomatic Complexity:** ${metrics.cyclomaticComplexity}\n`);
+    md.appendMarkdown(`- **Nested Depth:** ${metrics.nestedDepth}\n`);
+    md.appendMarkdown(`- **Lines of Code:** ${metrics.functionLength}\n`);
+    md.appendMarkdown(`- **Conditions:** ${metrics.conditionCount}\n`);
+    md.appendMarkdown(`- **Loops:** ${metrics.loopCount}\n`);
+    md.appendMarkdown(`- **Parameters:** ${metrics.parameterCount}\n`);
+    md.appendMarkdown(`- **Return Statements:** ${metrics.returnCount}\n`);
 
-    // Add suggestion
+    // Add suggestion for any function with score > 10
     if (score > 10) {
       md.appendMarkdown('\n---\n\n');
-      md.appendMarkdown('**💡 Suggestion:**\n\n');
+      md.appendMarkdown('### 💡 Refactoring Recommendations:\n\n');
       md.appendMarkdown(this.getRefactoringSuggestion(complexity));
+    } else {
+      md.appendMarkdown('\n---\n\n');
+      md.appendMarkdown('✅ **This function has good complexity!**\n\n');
+      md.appendMarkdown('Keep maintaining this level of simplicity.\n');
     }
 
     return md;
@@ -129,31 +133,68 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
    * Get refactoring suggestion based on complexity
    */
   private getRefactoringSuggestion(complexity: any): string {
-    const { metrics } = complexity;
+    const { metrics, level, score } = complexity;
     const suggestions: string[] = [];
 
-    if (metrics.nestedDepth > 3) {
-      suggestions.push('- Reduce nesting depth by extracting nested logic into separate functions');
+    // Critical suggestions
+    if (metrics.nestedDepth > 4) {
+      suggestions.push('🔴 **Critical:** Nesting depth is too high (' + metrics.nestedDepth + ' levels)');
+      suggestions.push('  - Extract nested logic into separate helper functions');
+      suggestions.push('  - Use early returns to reduce nesting');
+      suggestions.push('  - Consider using guard clauses');
+    } else if (metrics.nestedDepth > 3) {
+      suggestions.push('🟠 **Warning:** Reduce nesting depth by extracting nested logic into separate functions');
     }
 
-    if (metrics.functionLength > 50) {
-      suggestions.push('- Break this large function into smaller, focused functions');
+    if (metrics.functionLength > 100) {
+      suggestions.push('🔴 **Critical:** Function is too long (' + metrics.functionLength + ' lines)');
+      suggestions.push('  - Break into smaller, focused functions (aim for <50 lines)');
+      suggestions.push('  - Apply Single Responsibility Principle');
+    } else if (metrics.functionLength > 50) {
+      suggestions.push('🟠 **Warning:** Break this large function into smaller, focused functions');
     }
 
-    if (metrics.cyclomaticComplexity > 10) {
-      suggestions.push('- Reduce decision points by simplifying conditional logic');
+    if (metrics.cyclomaticComplexity > 15) {
+      suggestions.push('🔴 **Critical:** Cyclomatic complexity is very high (' + metrics.cyclomaticComplexity + ')');
+      suggestions.push('  - Simplify conditional logic using strategy pattern');
+      suggestions.push('  - Extract complex conditions into well-named functions');
+      suggestions.push('  - Consider using lookup tables instead of switch/if-else chains');
+    } else if (metrics.cyclomaticComplexity > 10) {
+      suggestions.push('🟠 **Warning:** Reduce decision points by simplifying conditional logic');
     }
 
-    if (metrics.parameterCount > 4) {
-      suggestions.push('- Consider using an options object instead of multiple parameters');
+    if (metrics.parameterCount > 5) {
+      suggestions.push('🟠 **Warning:** Too many parameters (' + metrics.parameterCount + ')');
+      suggestions.push('  - Use an options/config object instead');
+      suggestions.push('  - Consider if this function has too many responsibilities');
+    } else if (metrics.parameterCount > 4) {
+      suggestions.push('💡 Consider using an options object instead of multiple parameters');
     }
 
-    if (metrics.returnCount > 3) {
-      suggestions.push('- Consolidate return statements for better readability');
+    if (metrics.returnCount > 5) {
+      suggestions.push('🟡 Consolidate return statements (currently ' + metrics.returnCount + ')');
+      suggestions.push('  - Use a single return point if possible');
+      suggestions.push('  - Or ensure early returns follow guard clause pattern');
+    } else if (metrics.returnCount > 3) {
+      suggestions.push('💡 Consider consolidating return statements for better readability');
+    }
+
+    // General suggestions based on level
+    if (level === 'Critical') {
+      suggestions.push('');
+      suggestions.push('🚨 **Immediate Action Required:**');
+      suggestions.push('This function should be refactored as soon as possible to improve');
+      suggestions.push('maintainability, testability, and reduce the risk of bugs.');
+    } else if (level === 'High') {
+      suggestions.push('');
+      suggestions.push('⚠️ **Recommended Action:**');
+      suggestions.push('Schedule time to refactor this function in the next sprint.');
     }
 
     if (suggestions.length === 0) {
-      suggestions.push('- Consider splitting this function into smaller helper functions');
+      suggestions.push('💡 Consider splitting this function into smaller helper functions');
+      suggestions.push('  - Improves readability and testability');
+      suggestions.push('  - Makes code easier to maintain');
     }
 
     return suggestions.join('\n');

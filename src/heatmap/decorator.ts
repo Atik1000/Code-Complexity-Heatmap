@@ -13,26 +13,26 @@ export class HeatmapDecorator {
 
   constructor() {
     this.lowComplexityDecoration = this.createDecoration(
-      'rgba(0, 255, 0, 0.1)',
-      'rgba(0, 200, 0, 0.3)',
+      'rgba(0, 255, 0, 0.15)',
+      'rgba(0, 200, 0, 0.4)',
       '#008000'
     );
 
     this.mediumComplexityDecoration = this.createDecoration(
-      'rgba(255, 255, 0, 0.15)',
-      'rgba(255, 200, 0, 0.4)',
-      '#8B8000'
+      'rgba(255, 255, 0, 0.25)',
+      'rgba(255, 200, 0, 0.5)',
+      '#FFA500'
     );
 
     this.highComplexityDecoration = this.createDecoration(
-      'rgba(255, 165, 0, 0.2)',
-      'rgba(255, 140, 0, 0.5)',
+      'rgba(255, 140, 0, 0.3)',
+      'rgba(255, 100, 0, 0.6)',
       '#FF8C00'
     );
 
     this.criticalComplexityDecoration = this.createDecoration(
-      'rgba(255, 0, 0, 0.25)',
-      'rgba(255, 0, 0, 0.6)',
+      'rgba(255, 0, 0, 0.35)',
+      'rgba(255, 0, 0, 0.7)',
       '#DC143C'
     );
   }
@@ -47,12 +47,12 @@ export class HeatmapDecorator {
   ): vscode.TextEditorDecorationType {
     return vscode.window.createTextEditorDecorationType({
       backgroundColor,
-      borderWidth: '1px',
+      borderWidth: '2px',
       borderStyle: 'solid',
       borderColor,
       overviewRulerColor,
       overviewRulerLane: vscode.OverviewRulerLane.Right,
-      isWholeLine: false
+      isWholeLine: true
     });
   }
 

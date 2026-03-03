@@ -46,7 +46,9 @@ class CodeHeatmapExtension {
       { scheme: 'file', language: 'typescript' },
       { scheme: 'file', language: 'typescriptreact' },
       { scheme: 'file', language: 'javascriptreact' },
-      { scheme: 'file', language: 'python' }
+      { scheme: 'file', language: 'python' },
+      { scheme: 'file', language: 'php' },
+      { scheme: 'file', language: 'go' }
     ];
     
     this.disposables.push(
@@ -174,7 +176,7 @@ class CodeHeatmapExtension {
     const languageId = document.languageId;
 
     // Check if language is supported
-    const supportedLanguages = ['javascript', 'typescript', 'typescriptreact', 'javascriptreact', 'python'];
+    const supportedLanguages = ['javascript', 'typescript', 'typescriptreact', 'javascriptreact', 'python', 'php', 'go'];
     if (!supportedLanguages.includes(languageId)) {
       return;
     }
@@ -236,7 +238,7 @@ class CodeHeatmapExtension {
 
     // Find all supported files
     const files = await vscode.workspace.findFiles(
-      '**/*.{js,ts,jsx,tsx,py}',
+      '**/*.{js,ts,jsx,tsx,py,php,go}',
       '**/node_modules/**'
     );
 
