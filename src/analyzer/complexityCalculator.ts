@@ -2,6 +2,8 @@ import { FunctionInfo, FileAnalysis } from '../types';
 import { ScoreCalculator } from '../utils/scoreCalculator';
 import { ASTParser } from './astParser';
 import { PythonParser } from './pythonParser';
+import { PHPParser } from './phpParser';
+import { GoParser } from './goParser';
 
 /**
  * Main complexity calculator that handles multiple languages
@@ -10,11 +12,15 @@ export class ComplexityCalculator {
   private scoreCalculator: ScoreCalculator;
   private jsParser: ASTParser;
   private pythonParser: PythonParser;
+  private phpParser: PHPParser;
+  private goParser: GoParser;
 
   constructor() {
     this.scoreCalculator = new ScoreCalculator();
     this.jsParser = new ASTParser(this.scoreCalculator);
     this.pythonParser = new PythonParser(this.scoreCalculator);
+    this.phpParser = new PHPParser(this.scoreCalculator);
+    this.goParser = new GoParser(this.scoreCalculator);
   }
 
   /**
@@ -26,16 +32,22 @@ export class ComplexityCalculator {
 
     switch (languageId) {
       case 'javascript':
+      case 'javascriptreact':
         functions = this.jsParser.parse(code, filePath, 'javascript');
         break;
       case 'typescript':
       case 'typescriptreact':
-      case 'javascriptreact':
         functions = this.jsParser.parse(code, filePath, 'typescript');
         language = 'typescript';
         break;
       case 'python':
         functions = this.pythonParser.parse(code, filePath);
+        break;
+      case 'php':
+        functions = this.phpParser.parse(code, filePath);
+        break;
+      case 'go':
+        functions = this.goParser.parse(code, filePath);
         break;
       default:
         return null;
