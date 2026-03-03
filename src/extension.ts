@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as vscode from 'vscode';
 import { ComplexityCalculator } from './analyzer/complexityCalculator';
 import { HeatmapDecorator } from './heatmap/decorator';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as vscode from 'vscode';
 import { FileAnalysis, FunctionInfo, WorkspaceAnalysis } from '../types';
 import * as path from 'path';

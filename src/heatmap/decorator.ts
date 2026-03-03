@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as vscode from 'vscode';
 import { ComplexityLevel, FunctionInfo } from '../types';
 

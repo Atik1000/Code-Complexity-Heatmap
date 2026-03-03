@@ -9,3 +9,9 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 node_modules/**
+.git/**
+.gitignore
+.eslintrc.json
+*.vsix
+examples/**
+PUBLISHING_CHECKLIST.md

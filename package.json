@@ -3,7 +3,7 @@
   "displayName": "Code Complexity Heatmap",
   "description": "Visualize code complexity with color-coded heatmaps to identify refactoring opportunities and technical debt",
   "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "atik1000",
   "engines": {
     "vscode": "^1.75.0"
   },
