@@ -1,12 +1,19 @@
 // @ts-nocheck
 import * as vscode from 'vscode';
 import { FunctionInfo } from '../types';
+import { LLMProvider } from '../ai/llmProvider';
 
 /**
  * Provides hover information for functions with complexity metrics
  */
 export class ComplexityHoverProvider implements vscode.HoverProvider {
   private functionsMap: Map<string, FunctionInfo[]> = new Map();
+  private aiSuggestionsCache: Map<string, string> = new Map();
+  private llmProvider: LLMProvider;
+
+  constructor() {
+    this.llmProvider = new LLMProvider();
+  }
 
   /**
    * Update the functions map for a file
@@ -25,11 +32,11 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
   /**
    * Provide hover information
    */
-  provideHover(
+  async provideHover(
     document: vscode.TextDocument,
     position: vscode.Position,
     token: vscode.CancellationToken
-  ): vscode.ProviderResult<vscode.Hover> {
+  ): Promise<vscode.Hover | null> {
     const filePath = document.uri.fsPath;
     const functions = this.functionsMap.get(filePath);
 
@@ -48,14 +55,14 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
     }
 
     // Build hover content
-    const markdown = this.buildHoverMarkdown(foundFunction);
+    const markdown = await this.buildHoverMarkdown(foundFunction, document);
     return new vscode.Hover(markdown);
   }
 
   /**
    * Build markdown content for hover tooltip
    */
-  private buildHoverMarkdown(func: FunctionInfo): vscode.MarkdownString {
+  private async buildHoverMarkdown(func: FunctionInfo, document: vscode.TextDocument): Promise<vscode.MarkdownString> {
     const md = new vscode.MarkdownString();
     md.isTrusted = true;
     md.supportHtml = true;
@@ -65,12 +72,11 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
 
     // Add emoji based on complexity level
     const emoji = this.getComplexityEmoji(level);
-    const levelColor = this.getComplexityColor(level);
 
     md.appendMarkdown(`### ${emoji} Function: \`${name}\`\n\n`);
     md.appendMarkdown(`**Complexity Score:** \`${score}\` _(${level})_\n\n`);
     md.appendMarkdown('---\n\n');
-    md.appendMarkdown('**📊 Metrics:**\n\n');
+    md.appendMarkdown('**📊 Metrics:**\n\n`);
     md.appendMarkdown(`- **Cyclomatic Complexity:** ${metrics.cyclomaticComplexity}\n`);
     md.appendMarkdown(`- **Nested Depth:** ${metrics.nestedDepth}\n`);
     md.appendMarkdown(`- **Lines of Code:** ${metrics.functionLength}\n`);
@@ -79,10 +85,43 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
     md.appendMarkdown(`- **Parameters:** ${metrics.parameterCount}\n`);
     md.appendMarkdown(`- **Return Statements:** ${metrics.returnCount}\n`);
 
-    // Add suggestion for any function with score > 10
+    // Add AI suggestions if enabled
+    const config = vscode.workspace.getConfiguration('codeHeatmap');
+    const aiEnabled = config.get('ai.enabled', false);
+
     if (score > 10) {
       md.appendMarkdown('\n---\n\n');
       md.appendMarkdown('### 💡 Refactoring Recommendations:\n\n');
+      
+      if (aiEnabled) {
+        // Try to get AI suggestions
+        const cacheKey = `${func.filePath}:${func.name}:${score}`;
+        let aiSuggestion = this.aiSuggestionsCache.get(cacheKey);
+
+        if (!aiSuggestion) {
+          md.appendMarkdown('_🤖 Generating AI suggestions..._\n\n');
+          
+          // Get function code
+          const functionCode = document.getText(new vscode.Range(
+            func.startLine - 1, 0,
+            func.endLine - 1, 999
+          ));
+
+          // Get AI suggestion asynchronously
+          this.llmProvider.getSuggestions(func, functionCode).then(suggestion => {
+            if (suggestion) {
+              this.aiSuggestionsCache.set(cacheKey, suggestion);
+            }
+          });
+        } else {
+          md.appendMarkdown('**🤖 AI-Powered Suggestions:**\n\n');
+          md.appendMarkdown(aiSuggestion);
+          md.appendMarkdown('\n\n---\n\n');
+        }
+      }
+      
+      // Always show rule-based suggestions as fallback
+      md.appendMarkdown('**📋 Rule-Based Suggestions:**\n\n');
       md.appendMarkdown(this.getRefactoringSuggestion(complexity));
     } else {
       md.appendMarkdown('\n---\n\n');

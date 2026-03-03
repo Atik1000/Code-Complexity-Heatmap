@@ -54,6 +54,14 @@
       {
         "command": "codeHeatmap.clearHighlights",
         "title": "Code Heatmap: Clear Highlights"
+      },
+      {
+        "command": "codeHeatmap.enableAI",
+        "title": "Code Heatmap: Enable AI Suggestions"
+      },
+      {
+        "command": "codeHeatmap.checkOllama",
+        "title": "Code Heatmap: Check Ollama Status"
       }
     ],
     "viewsContainers": {
@@ -106,6 +114,27 @@
           "type": "number",
           "default": 35,
           "description": "Maximum score for high complexity"
+        },
+        "codeHeatmap.ai.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable AI-powered refactoring suggestions (requires Ollama or Gemini API key)"
+        },
+        "codeHeatmap.ai.provider": {
+          "type": "string",
+          "enum": ["ollama", "gemini"],
+          "default": "ollama",
+          "description": "AI provider for code suggestions. Ollama is free and local, Gemini has free tier."
+        },
+        "codeHeatmap.ai.ollamaModel": {
+          "type": "string",
+          "default": "codellama",
+          "description": "Ollama model to use (codellama, deepseek-coder, etc.)"
+        },
+        "codeHeatmap.ai.geminiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Google Gemini API key (Get free at https://makersuite.google.com/app/apikey)"
         }
       }
     }
