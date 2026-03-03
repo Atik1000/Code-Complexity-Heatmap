@@ -112,6 +112,20 @@ class CodeHeatmapExtension {
         this.jumpToFunction(functionInfo);
       })
     );
+
+    // Enable AI suggestions
+    this.disposables.push(
+      vscode.commands.registerCommand('codeHeatmap.enableAI', async () => {
+        await this.setupAISuggestions();
+      })
+    );
+
+    // Check Ollama status
+    this.disposables.push(
+      vscode.commands.registerCommand('codeHeatmap.checkOllama', async () => {
+        await this.checkOllamaStatus();
+      })
+    );
   }
 
   /**
@@ -459,6 +473,91 @@ class CodeHeatmapExtension {
       selection: range,
       viewColumn: vscode.ViewColumn.One
     });
+  }
+
+  /**
+   * Setup AI suggestions
+   */
+  private async setupAISuggestions(): Promise<void> {
+    const choice = await vscode.window.showQuickPick([
+      {
+        label: '$(desktop-download) Ollama (Local, Free)',
+        description: 'Run AI models locally on your machine - completely free',
+        value: 'ollama'
+      },
+      {
+        label: '$(cloud) Google Gemini (Cloud, Free Tier)',
+        description: 'Use Google\'s Gemini API - free tier available',
+        value: 'gemini'
+      }
+    ], {
+      placeHolder: 'Choose an AI provider for code suggestions'
+    });
+
+    if (!choice) return;
+
+    const config = vscode.workspace.getConfiguration('codeHeatmap');
+
+    if (choice.value === 'ollama') {
+      const installed = await vscode.window.showInformationMessage(
+        'Do you have Ollama installed?',
+        'Yes, it\'s running',
+        'No, install it',
+        'Cancel'
+      );
+
+      if (installed === 'No, install it') {
+        vscode.env.openExternal(vscode.Uri.parse('https://ollama.ai'));
+        vscode.window.showInformationMessage(
+          'After installing Ollama, run: ollama pull codellama'
+        );
+        return;
+      } else if (installed === 'Yes, it\'s running') {
+        await config.update('ai.provider', 'ollama', vscode.ConfigurationTarget.Global);
+        await config.update('ai.enabled', true, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage('✅ Ollama AI suggestions enabled!');
+      }
+    } else if (choice.value === 'gemini') {
+      const apiKey = await vscode.window.showInputBox({
+        prompt: 'Enter your Google Gemini API key',
+        placeHolder: 'Get free API key at: https://makersuite.google.com/app/apikey',
+        password: true
+      });
+
+      if (apiKey) {
+        await config.update('ai.geminiApiKey', apiKey, vscode.ConfigurationTarget.Global);
+        await config.update('ai.provider', 'gemini', vscode.ConfigurationTarget.Global);
+        await config.update('ai.enabled', true, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage('✅ Gemini AI suggestions enabled!');
+      }
+    }
+  }
+
+  /**
+   * Check Ollama status
+   */
+  private async checkOllamaStatus(): Promise<void> {
+    const { LLMProvider } = await import('../ai/llmProvider');
+    const llm = new LLMProvider();
+
+    const available = await llm.isOllamaAvailable();
+    
+    if (available) {
+      const models = await llm.getOllamaModels();
+      vscode.window.showInformationMessage(
+        `✅ Ollama is running! Available models: ${models.join(', ') || 'none - run: ollama pull codellama'}`
+      );
+    } else {
+      const action = await vscode.window.showWarningMessage(
+        '❌ Ollama is not running or not installed',
+        'Install Ollama',
+        'Start Ollama'
+      );
+
+      if (action === 'Install Ollama') {
+        vscode.env.openExternal(vscode.Uri.parse('https://ollama.ai'));
+      }
+    }
   }
 
   /**

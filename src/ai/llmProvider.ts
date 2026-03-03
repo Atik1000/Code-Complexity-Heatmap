@@ -77,7 +77,7 @@ export class LLMProvider {
         throw new Error(`Ollama request failed: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.response || null;
     } catch (error) {
       // Ollama not running or not available
@@ -139,7 +139,7 @@ export class LLMProvider {
         throw new Error(`Gemini request failed: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       const suggestion = data.candidates?.[0]?.content?.parts?.[0]?.text;
       return suggestion || null;
     } catch (error) {
@@ -204,7 +204,7 @@ Keep response concise and actionable (max 400 words).`;
       const response = await fetch(`${this.ollamaBaseUrl}/api/tags`);
       if (!response.ok) return [];
       
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.models?.map((m: any) => m.name) || [];
     } catch {
       return [];

@@ -76,7 +76,7 @@ export class ComplexityHoverProvider implements vscode.HoverProvider {
     md.appendMarkdown(`### ${emoji} Function: \`${name}\`\n\n`);
     md.appendMarkdown(`**Complexity Score:** \`${score}\` _(${level})_\n\n`);
     md.appendMarkdown('---\n\n');
-    md.appendMarkdown('**📊 Metrics:**\n\n`);
+    md.appendMarkdown('**📊 Metrics:**\n\n');
     md.appendMarkdown(`- **Cyclomatic Complexity:** ${metrics.cyclomaticComplexity}\n`);
     md.appendMarkdown(`- **Nested Depth:** ${metrics.nestedDepth}\n`);
     md.appendMarkdown(`- **Lines of Code:** ${metrics.functionLength}\n`);
