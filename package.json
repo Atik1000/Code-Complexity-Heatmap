@@ -2,7 +2,7 @@
   "name": "code-complexity-heatmap",
   "displayName": "Code Complexity Heatmap",
   "description": "Visualize code complexity with color-coded heatmaps for JavaScript, TypeScript, Python, PHP, and Go. Identify refactoring opportunities and technical debt.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "atik1000",
   "engines": {
     "vscode": "^1.75.0"
